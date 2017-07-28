@@ -96,6 +96,7 @@
 
 #define SI3000_DAC_VOL_CONTROL 7
 #define    SI3000_TXG_12DB     (0x1F << 2)
+#define    SI3000_TXG_6DB      (0x1B << 2)
 #define    SI3000_TXG_0DB      (0x17 << 2)
 #define    SI3000_TXG_M34P5DB  (0x0 << 2)
 
@@ -147,7 +148,7 @@ typedef struct {
   void (*sampleWrite)(uint16_t data);
   uint8_t (*sampleCompress)(int16_t  pcm_val);
   int16_t (*sampleExpand)(uint8_t u_val);
-
+  void (*outputVolume)(uint8_t volume);
 } M10CODEC_STRUCT;
 
 extern const M10CODEC_STRUCT CODEC;

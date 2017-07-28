@@ -164,16 +164,45 @@ static void Si3000_init()
    Si3000_reg_write (SI3000_PLL1_MUL_M1, 255);
     
    Si3000_reg_write (SI3000_CONTROL_1, SI3000_SPD_NORMAL);
-   Si3000_reg_write (SI3000_CONTROL_2, SI3000_HPFD_DISABLE | SI3000_PLL_DIV_5 | SI3000_DL1_NORMAL | SI3000_DL2_NORMAL);
+   Si3000_reg_write (SI3000_CONTROL_2, SI3000_HPFD_ENABLE | SI3000_PLL_DIV_5 | SI3000_DL1_NORMAL | SI3000_DL2_NORMAL);
    
-   Si3000_reg_write (SI3000_RX_GAIN_CONTROL_1, SI3000_LIG_20DB | SI3000_MCM_MUTE | SI3000_HIM_MUTE | SI3000_IIR_ENABLE);
-   // Si3000_reg_write (SI3000_RX_GAIN_CONTROL_1, SI3000_LIM_MUTE | SI3000_MCG_20DB | SI3000_HIM_MUTE | SI3000_FIR_ENABLE);
+   //Si3000_reg_write (SI3000_RX_GAIN_CONTROL_1, SI3000_LIG_20DB | SI3000_MCM_MUTE | SI3000_HIM_MUTE | SI3000_IIR_ENABLE);
+    Si3000_reg_write (SI3000_RX_GAIN_CONTROL_1, SI3000_LIM_MUTE | SI3000_MCG_30DB | SI3000_HIM_MUTE | SI3000_FIR_ENABLE);
    
    Si3000_reg_write (SI3000_ADC_VOL_CONTROL, SI3000_RXG_12DB | SI3000_LOM_MUTE | SI3000_HOM_MUTE);
-   Si3000_reg_write (SI3000_DAC_VOL_CONTROL, SI3000_TXG_0DB | SI3000_SLM_ACTIVE | SI3000_SRM_ACTIVE);
-   Si3000_reg_write (SI3000_ANALOG_ATTEN, SI3000_LOT_M18DB | SI3000_LOT_M18DB);
+   Si3000_reg_write (SI3000_DAC_VOL_CONTROL, SI3000_TXG_6DB | SI3000_SLM_ACTIVE | SI3000_SRM_ACTIVE);
+   Si3000_reg_write (SI3000_ANALOG_ATTEN, SI3000_LOT_M18DB | SI3000_SOT_M18DB);
    
 } // End of Si3000_init()
+
+//----------------------------------------------------------------------------
+// Si3000_volume()
+//
+// Parameters:
+//      None
+//
+// Return Value:
+//      value to set the volume. (from 0 to 32). 0 to mute the output. 
+//
+// Remarks:
+//      Function to set the output volume 
+//----------------------------------------------------------------------------
+
+static void Si3000_volume(uint8_t volume)
+{
+    if (volume == 0) {
+        Si3000_reg_write (SI3000_DAC_VOL_CONTROL, SI3000_SLM_MUTE | SI3000_SLM_MUTE);
+    } else {
+        --volume;
+        if (volume > 31) {
+            volume = 31;
+        }
+        volume = volume << 2;
+        Si3000_reg_write (SI3000_DAC_VOL_CONTROL, SI3000_SLM_ACTIVE | SI3000_SRM_ACTIVE | volume);
+    }
+
+} // End of Si3000_volume()
+
 
 //----------------------------------------------------------------------------
 // Si3000_sample_write()
@@ -477,6 +506,7 @@ const M10CODEC_STRUCT CODEC = {Si3000_init,            // begin
                             Si3000_reg_write,         // regWrite
                             Si3000_sample_read,       // sampleRead
                             Si3000_sample_write,      // sampleWrite
-                            Snack_Lin2Alaw,          // sampleCompress
-                            Snack_Alaw2Lin           // sampleExpand 
+                            Snack_Lin2Mulaw,          // sampleCompress
+                            Snack_Mulaw2Lin,          // sampleExpand
+                            Si3000_volume             // outputVolume                            
 };
