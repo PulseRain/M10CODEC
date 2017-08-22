@@ -33,7 +33,7 @@
 //      Function to read the register of Si3000
 //----------------------------------------------------------------------------
 
-static uint16_t Si3000_reg_read (uint8_t addr)
+static uint16_t Si3000_reg_read (uint8_t addr) __reentrant
 {
    uint8_t low, high;
 
@@ -149,7 +149,7 @@ static void Si3000_reg_write (uint8_t addr, uint16_t data) __reentrant
 //      Function to initialize Si3000
 //----------------------------------------------------------------------------
 
-static void Si3000_init()
+static void Si3000_init() __reentrant
 {
    CODEC_CSR = (1 << SI3000_RESET_N_SHIFT) | SI3000_ENABLE;
    delay (100);
@@ -188,7 +188,7 @@ static void Si3000_init()
 //      Function to set the output volume 
 //----------------------------------------------------------------------------
 
-static void Si3000_volume(uint8_t volume)
+static void Si3000_volume(uint8_t volume) __reentrant
 {
     if (volume == 0) {
         Si3000_reg_write (SI3000_DAC_VOL_CONTROL, SI3000_SLM_MUTE | SI3000_SLM_MUTE);
@@ -218,7 +218,7 @@ static void Si3000_volume(uint8_t volume)
 //      (The LSB will be set to zero)
 //----------------------------------------------------------------------------
 
-static void Si3000_sample_write (uint16_t data)
+static void Si3000_sample_write (uint16_t data) __reentrant
 {
    while(CODEC_CSR & SI3000_WR_BUSY_FLAG);
    CODEC_WRITE_DATA_HIGH = ((data >> 8) & 0xFF);
@@ -239,7 +239,7 @@ static void Si3000_sample_write (uint16_t data)
 //      Function to read sample from Si3000. 
 //----------------------------------------------------------------------------
 
-static uint16_t Si3000_sample_read ()
+static uint16_t Si3000_sample_read () __reentrant
 {
    uint8_t high, low;
    
@@ -300,7 +300,7 @@ static int16_t seg_uend[8] = {0x3F, 0x7F, 0xFF, 0x1FF, 0x3FF, 0x7FF, 0xFFF, 0x1F
 //      Compress by Mu Law. 
 //----------------------------------------------------------------------------
 
-static uint8_t Snack_Lin2Mulaw(int16_t  pcm_val)  /* 2's complement (16-bit range) */
+static uint8_t Snack_Lin2Mulaw(int16_t  pcm_val) __reentrant  /* 2's complement (16-bit range) */
 {
   int16_t   mask;
   int16_t   seg;
@@ -361,7 +361,7 @@ static uint8_t Snack_Lin2Mulaw(int16_t  pcm_val)  /* 2's complement (16-bit rang
 //      expand the 8 bit Mu Law data to 16 bit linear sample 
 //----------------------------------------------------------------------------
 
-static int16_t Snack_Mulaw2Lin(uint8_t u_val)
+static int16_t Snack_Mulaw2Lin(uint8_t u_val) __reentrant
 {
   int16_t t;
   uint16_t tmp;
@@ -402,7 +402,7 @@ static int16_t seg_aend[8] = {0x1F, 0x3F, 0x7F, 0xFF, 0x1FF, 0x3FF, 0x7FF, 0xFFF
 //      Compress by A Law. 
 //----------------------------------------------------------------------------
 
-static uint8_t Snack_Lin2Alaw(int16_t pcm_val)	/* 2's complement (16-bit range) */
+static uint8_t Snack_Lin2Alaw(int16_t pcm_val) __reentrant	/* 2's complement (16-bit range) */
 {
     uint8_t mask;
     uint8_t seg;
@@ -462,7 +462,7 @@ static uint8_t Snack_Lin2Alaw(int16_t pcm_val)	/* 2's complement (16-bit range) 
 //      expand the 8 bit A Law data to 16 bit linear sample 
 //----------------------------------------------------------------------------
 
-static int16_t Snack_Alaw2Lin(uint8_t a_val)
+static int16_t Snack_Alaw2Lin(uint8_t a_val) __reentrant
 {
     int16_t t;
     uint8_t seg;

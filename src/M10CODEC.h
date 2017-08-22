@@ -141,14 +141,14 @@
 #define SI3000_DONE_FLAG        (1 << SI3000_DONE_SHIFT)
 
 typedef struct {
-  void (*begin)();
-  uint16_t (*regRead)(uint8_t addr);
+  void (*begin)() __reentrant;
+  uint16_t (*regRead)(uint8_t addr) __reentrant;
   void (*regWrite) (uint8_t addr, uint16_t data) __reentrant;
-  uint16_t (*sampleRead)();
-  void (*sampleWrite)(uint16_t data);
-  uint8_t (*sampleCompress)(int16_t  pcm_val);
-  int16_t (*sampleExpand)(uint8_t u_val);
-  void (*outputVolume)(uint8_t volume);
+  uint16_t (*sampleRead)() __reentrant;
+  void (*sampleWrite)(uint16_t data) __reentrant;
+  uint8_t (*sampleCompress)(int16_t  pcm_val) __reentrant;
+  int16_t (*sampleExpand)(uint8_t u_val) __reentrant;
+  void (*outputVolume)(uint8_t volume) __reentrant;
 } M10CODEC_STRUCT;
 
 extern const M10CODEC_STRUCT CODEC;
